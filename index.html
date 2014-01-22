@@ -1,0 +1,677 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>node-webkit - Budapest Node.js Meetup</title>
+
+		<meta name="description" content="">
+		<meta name="author" content="@_Nec">
+
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<link rel="stylesheet" href="css/reveal.min.css">
+		<link rel="stylesheet" href="css/theme/ustream.css" id="theme">
+
+		<!-- For syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- If the query includes 'print-pdf', use the PDF print sheet -->
+		<script>
+			document.write( '<link rel="stylesheet" href="css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+
+        <style type="text/css">
+            .columns {
+                float: left;
+                top: 110px;
+                width: 45%;
+                padding: 0 20px;
+            }
+
+            .node-native,
+            .node-third,
+            .web-libs,
+            .dom-api {
+                display: inline-block;
+                vertical-align: middle !important;
+                padding: 10px;
+                margin: 10px;
+
+                width: 30%;
+
+                min-height: 100px;
+            }
+
+            .node-native { background-color: #91b31b; }
+            .node-third { background-color: #d349a3; }
+            .web-libs { background-color: #ffb400; }
+            .dom-api { background-color: #009fe0; }
+
+            .clear:after {
+                content: "";
+                display: block;
+                height: 0;
+                clear: both;
+                visibility: hidden;
+            }
+        </style>
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+				<section data-background="#333" data-transition="linear" >
+					<h1>node-webkit</h1>
+					<p>Desktop application development<br />with node+js / html / css</p>
+					<p>
+						<small><br />
+                            <a href="http://nec.shell8.net">Szabolcsi-Tóth Szabolcs</a>  <br /><br />
+                            <a href="http://twitter.com/_nec">
+                                <img src="https://pbs.twimg.com/profile_images/788240078/_nec_bigger.jpg" />
+                            </a>
+                            <br />
+                            <a href="http://twitter.com/_nec">@_Nec</a>
+
+                        </small>
+					</p>
+				</section>
+
+				<section data-background="#333" data-transition="linear" >
+					<h2>What we needed</h2>
+					<p class="fragment">
+						Ustream embed player
+					</p>
+					
+					<div style="float: left;"  class="fragment">
+						<iframe width="480" height="302" src="http://www.ustream.tv/embed/10414700?v=3&amp;wmode=direct" scrolling="no" frameborder="0" style="border: 0px none transparent;"></iframe>
+					</div>
+					<ul style="width: 400px;">
+						<li class="fragment">iframe</li>
+						<li class="fragment">supports several platforms</li>
+						<li class="fragment">live video playback with Flash/HTML5</li>
+						<li class="fragment">60 million visits per month</li>
+					</ul>	
+
+					<aside class="notes">
+						Ustream embed player<br />
+						iframe based viewer  - we have control over code deployment and versions<br />
+						(desktop, mobile, smart tv's, game consoles)<br />
+						live video with Flash/HTML5 <br />
+						<br />
+                        approx 60 million visits per month, <br />
+                        key part of the product,
+                        sales and marketing are pretty sensitive to its functionality<br />
+                        problem affect several teams <br />
+                        quick debugging is a key
+					</aside>
+				</section>
+
+				<section data-background="#333" data-transition="linear">
+					
+					
+					<p>
+						Debug can be problematic
+					</p>
+					<ul class="fragment highlight-red" data-fragment-index="4">
+						<li class="fragment roll-in" data-fragment-index="0">desktop - dev console</li>
+						<li class="fragment roll-in" data-fragment-index="1">mobile:
+							<ul>
+								<li class="fragment roll-in" data-fragment-index="2">native remote debug <br />(osx safari, android sdk + chrome)</li>
+								<li class="fragment roll-in" data-fragment-index="3">Adobe Edge Inspect <br />(weinre)</li>
+							</ul>
+						</li>
+					</ul>
+
+
+					<p class="fragment roll-in" data-fragment-index="4">
+						<br />
+						All these are for developers
+					</p>
+
+                    <aside class="notes">
+                        native debug is tied to OS versions (older OS'es are out of the question) <br />
+                        weinre is a small http and websocket server with a frontend console <br />
+                        additional code needed in your application to enable it
+                    </aside>
+
+				</section>
+
+				<section data-background="#333" data-transition="linear">
+					
+
+					<p>
+						But usually, error reports are not from developers...
+					</p>
+
+					<p class="fragment fade-in">
+						<img src="images/momoclo.jpg" height="500" />
+					</p>
+
+					
+					<aside class="notes">
+
+                        some errors are noticed quickly by client, and/or
+                        sales and marketing - <br />
+                        in our case, this means colleagues in US/JP/KR
+						<br />
+						<br />
+						momoclo
+<br />
+						currently the most popular girl band in japan, hiperactive J-pop
+<br />
+                        Once they had a 24 hour long live event, <br />
+                        they even had the whole japanese ustream site re-skinned in their theme
+						<br />
+                        Imagine that we try to explain a japanese manager how to natively debug over osx safari <br />
+						the odds are high that it wont happen, even if the japanese are the one of the best error-reporters
+
+					</aside>
+				</section>
+
+                <section data-background="#333" data-transition="linear">
+
+                    <h2>Debugging LIVE content</h2>
+
+                    <p >
+                        "When" and "Where" are also factors in debugging
+                    </p>
+
+                    <aside class="notes">
+                        because it's live, it's important to have logs from first hand <br />
+                        and we can restrict content to show up on specific sites, or geographical locations
+                    </aside>
+                </section>
+
+
+                <section data-background="#333" data-transition="linear">
+					<h2>Summary</h2>
+
+					<ul>
+						<li class="fragment roll-in">debug tool</li>
+						<li class="fragment roll-in">on every possible platform</li>
+						<li class="fragment roll-in">in house</li>
+						<li class="fragment roll-in">quick logging</li>
+						<li class="fragment roll-in">as much information in bugreports as possible</li>
+					</ul>
+					
+					<aside class="notes">
+
+                        so we needed a debug tool,<br />
+                        that is available on every platform our people use<br />
+                        osx or windows or even linux
+                        <br />
+                        in-house, so we dont want to put the app on any appstore, or
+                        make it available for publick download
+                        <br />
+                        goal is to have logs quickly, and have as much information in our error tickets as possible
+
+					</aside>
+				</section>
+
+				<section data-background="#333" data-transition="linear">
+					<h2>player > debug console</h2>
+					
+					<p class="fragment fade-out" data-fragment-index="3">
+						<span class="fragment roll-in" data-fragment-index="0">
+							WebRTC <br />
+							<span class="fragment roll-in" data-fragment-index="1">
+                                "Chrome/FF only" debug website,<br /> to connect the clients<br />
+                            </span>
+							<span class="fragment roll-in" data-fragment-index="2">
+                                <br />
+                                But mobile has no WebRTC yet :(
+                            </span>
+						</span>
+					</p>
+
+					<p class="fragment roll-in" data-fragment-index="3">
+						WebSocket
+					</p>
+
+
+					<p class="fragment" data-fragment-index="4">
+						WebSocket server on the desktop
+					</p>
+
+					<ul>
+						<li class="fragment " data-fragment-index="5">not in browsers</li>
+						<li class="fragment " data-fragment-index="6">maybe a custom NPAPI plugin for Chrome...</li>
+					</ul>
+
+
+					<aside class="notes">
+
+                        so we've the task to transfer log messages from the iframe player on a device
+                        to a desktop error log console
+                        <br />
+                        <br />
+                        webrtc would be ideal for this
+						<br />
+                        so we have websocket, put a websocket server on the desktop
+                        <br />
+						a remote debugging service is out of the question
+                        <br />
+                        our devops/netops have enough on their plate
+					</aside>
+				</section>				
+
+				<section data-background="#333" data-transition="linear">
+
+					<h2>Alternatives</h2>
+
+
+					<div class="columns fragment" style="left: 0;"  data-fragment-index="0">
+						<img src="images/cordova.png" width="300" style="background-color: white;" />
+
+						<p class="fragment " data-fragment-index="2">
+							easy start, <br />
+							good tools, <br />
+							has desktop build
+						</p>
+
+						<p class="fragment " data-fragment-index="3">
+							<br />
+							no WebSocket server module
+						</p>
+					</div>
+
+					<div class="columns fragment" style="right: 0;"  data-fragment-index="1">
+						<img src="images/air.png" width="300" />
+
+						<p class="fragment " data-fragment-index="4">
+							AS3 SocketServer <br />over JS API
+
+						</p>
+
+						<p class="fragment " data-fragment-index="5">
+
+							<br />
+                            WebSocket protocol has to be implemented by you,
+							<br />
+							complicated build
+						</p>
+
+
+					</div>
+
+					<aside class="notes">
+						ha webes alapokon kozelitjuk a problemat, mik a lehetosegek?<br />
+						<br />
+						cordova / phonegap<br />
+						cli alapu eszkoztar, kenyelmes<br />
+						<br />
+						az airnel a vegen sikerult osszerakni egy elvileg-protokoll-helyes implementaciot,<br />
+						reszben sajat, reszben talalt kodbol - de fura volt a mukodese, kimaradtak framek
+
+					</aside>
+				</section >	
+
+
+				<section data-background="#91b31b" data-transition="linear" class="dark-foreground">
+                    https://npmjs.org/package/ws
+                    <br />
+                    <br />
+					<blockquote>
+                    <br />
+						&ldquo;The ws module works fine, can't we just put that behind some frontend, and we're done?&rdquo;
+                    <br />
+                    <br />
+					</blockquote>
+
+				</section>
+
+
+
+				<section  data-transition="linear" >
+					<h2>
+						node-webkit
+					</h2>
+
+					<p>
+						web application runtime
+                        <br /><br />
+					</p>
+
+					<h3>chromium + nodejs</h3>
+
+					<p>
+                        <br />
+						Developed and maintained by Intel
+					</p>
+
+					<aside class="notes">
+						maintain: notification api is a big one, because it operates near the OS level, outside chromium itself
+						<br />
+						but it has most features of chrome
+					</aside>
+
+				</section>	
+
+
+
+				<section  data-transition="linear" >
+					<h2>
+						Features
+					</h2>
+
+					<p>
+						Chrome HTML5
+					</p>
+					<p>
+						GPU acceleration
+					</p>
+					<p>
+						video/audio
+					</p>
+					
+					<aside class="notes">
+						most usecases and examples are small games, or even editors
+					</aside>
+				</section>	
+
+
+
+				<section  data-transition="linear" >
+					
+					<img src="images/oddcouple.jpg" width="600"  />
+<br />
+<br />
+					<div class="clear fragment">
+						<div class="node-native">node core</div>
+						<div class="dom-api " >DOM api</div>
+					</div>
+					<div class="clear fragment">
+						<div class="node-third">node 3rd party modules</div>
+						<div class="web-libs">web libs</div>
+					</div>
+
+					<aside class="notes">
+						odd couples can occur with node in the browser
+						<br />
+
+						<br />
+						imagine a jquery with node, sounds absurd
+                        <br />
+                        or you've been there if you used browserify
+					</aside>
+
+				</section>	
+
+				<section data-transition="linear" >
+					
+					<h2>Sandbox</h2>
+					
+					<p>
+						Chromium security sandbox "downgrade"
+					</p>
+
+					<p>
+
+						file operations,<br />
+						cross-origin requests
+					</p>
+
+				    <aside class="notes">
+						as a packaged application, we are a bit safer from 3rd party scripts running amok
+					</aside>
+
+				</section>	
+
+				<section data-transition="linear" >
+					
+					<h2>Node</h2>
+					
+					<p>
+						Node symbols are injected into the <br />
+                        window context right after DOM init
+					</p>
+
+					<p><br />
+						Node stays async, but in a browser
+					</p>
+					
+				</section>
+
+				<section data-transition="linear" >
+					
+					<h2>Configuration</h2>
+					
+					<p>
+						package.json <br />
+						node packages, deps + runtime config
+					</p>
+
+					<p class="fragment">
+						<br />
+						assets (like CSS, JS libs, images)</em>: <br />
+						referenced in HTML, loaded by Chromium
+					</p>
+
+				</section>	
+
+
+
+				<section data-transition="linear" >
+					
+					<h2>Run</h2>
+					
+					<code >
+						nw C:\path\to\app\dir-with-package-json
+					</code>
+					<br /><br />
+					<code >		
+						nw /path/to/app/dir-with-package-json
+					</code>
+					<br /><br />
+					<code >
+						open -n -a node-webkit "/path/to/app/dir-with-package-json"						
+					</code>
+
+				</section>	
+
+
+
+				<section data-transition="linear" >
+					
+					<h2>Build</h2>
+					
+					<p>Zip the application folder, <br />.zip ➔ .nw </p>
+
+					<p>Attach nw runtime and done!</p>
+
+                    <p class="fragment">
+                        <br />
+                        Fully distributable app</p>
+
+					<p class="fragment"><br />
+                        Automated build:<br />
+                        grunt-node-webkit-builder
+                    </p>
+
+
+
+                    <aside class="notes">
+                        emphasise:
+                        <br />
+                        it's a fully distributeable app,
+                        the ones who use it, dont have to install any runtimes
+                    </aside>
+
+				</section>
+
+                <section data-transition="linear" >
+
+                    <h2>Build</h2>
+
+                    <p><br />
+                        Be aware! <br />
+                        It does <strong>not</strong>:
+                    </p>
+
+                    <ul>
+                        <li>protect</li>
+                        <li>obfuscate</li>
+                        <li>digitally sign</li>
+                        <li>secure</li>
+                    </ul>
+
+                    <p></p>
+
+
+                </section>
+
+
+                <section data-background="#eeece4" data-transition="linear" class="dark-foreground">
+					
+					<h2>Demo time!</h2>
+					
+				</section>	
+
+
+				<section data-background="#eeece4" data-transition="linear" class="dark-foreground">
+					
+					<h2>Odd couples</h2>
+					
+					<br />
+
+					<div class="clear fragment">
+						<div class="node-native">os, http, crypto, url, tls ...</div>
+						<div class="dom-api " >File, Blob, URL</div>
+					</div>
+					<div class="clear fragment">
+						<div class="node-third">ws</div>
+						<div class="web-libs">jquery, bootstrap</div>
+					</div>
+
+				</section>	
+
+
+
+
+
+
+				<section data-background="#eeece4" data-transition="linear" class="dark-foreground">
+					
+					<h2>grunt-node-webkit-builder</h2>
+
+<pre><code data-trim contenteditable>
+mteconsole: {
+  options : {
+    version: "0.8.1", // node-webkit version to build with
+    mac_icns: "../mtec/icons/mtec.icns",
+    build_dir: '../mtec/build', 
+    mac: true, 
+    win: true, 
+    linux32: false, 
+    linux64: false 
+  },
+  src: ['../mtec/src/**/*'] 
+}
+</code></pre>
+
+				</section>	
+
+				<section data-background="#eeece4" data-transition="linear" class="dark-foreground">
+					
+					<h2>grunt-node-webkit-builder</h2>
+
+					<img src="images/mtec-dir.png" width="100%" />
+
+				</section>
+
+
+                <section data-background="#eeece4" data-transition="linear" class="dark-foreground">
+
+                    <img src="images/mtec.png" width="100%" />
+
+                    <aside class="notes">
+                        SUMMARIZE!!
+                        <br />
+                        <br />
+                        this is quite new, actually you're among the first ones to see it,
+                        <br />
+                        it will be introduced to our QA team soon, and the rest of the company afterwards
+                    </aside>
+
+                </section>
+
+
+                <section data-background="#eeece4" data-transition="linear" class="dark-foreground">
+					
+					<h2>GitHub</h2>
+
+					<a href="https://github.com/rogerwang/node-webkit">https://github.com/rogerwang/node-webkit</a>
+
+				</section>	
+
+				<section data-background="#eeece4" data-transition="linear" class="dark-foreground">
+					
+					<h2>Q&amp;A</h2>
+
+
+                    <p>
+                        <br />
+                        <small>Thank you</small>
+                    </p>
+				</section>	
+			</div>
+
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.min.js"></script>
+
+		<script>
+
+			// Full list of configuration options available here:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: false,
+				progress: true,
+				history: true,
+				center: true,
+                backgroundTransition: 'slide',
+				theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+				transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
+
+				// Parallax scrolling
+				// parallaxBackgroundImage: 'https://s3.amazonaws.com/hakim-static/reveal-js/reveal-parallax-1.jpg',
+				// parallaxBackgroundSize: '2100px 900px',
+
+				// Optional libraries used to extend on reveal.js
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					//{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					//{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					//{ src: 'plugin/remotes/remotes.js', async: true, condition: function() { return !!document.body.classList; } },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+					{ src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+				]
+			});
+
+		</script>
+
+
+		<script type="text/javascript">
+		  hljs.tabReplace = '  '; // 4 spaces
+
+		  hljs.initHighlightingOnLoad();
+		</script>
+
+
+	</body>
+</html>
+			
